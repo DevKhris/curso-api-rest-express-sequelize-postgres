@@ -3,12 +3,14 @@ const { req, res } = require('express')
 const express = require('express')
 const bodyParser = require('body-parser')
 const postRoutes = require('./routes/post.route')
-const port = 3000
 const app = express()
 
+const conf = require('./modules/configuration.module')
+const db = require('./modules/database.module')
 
-const start = () => {
+const startServer = () => {
 
+    conf.getEnviroment()
     app.use(bodyParser.json())
 
     app.use('/posts', postRoutes)
@@ -19,11 +21,12 @@ const start = () => {
         res.end()
     })
 
-    app.listen(port, () => {
-        console.log(`Server listening at http://localhost:${port}`);
+    app.listen(process.env.PORT || 3000, () => {
+        db.connectDatabase()
+        console.log(`Server listening at http://localhost:${process.env.PORT}`);
     })
 }
 
 module.exports = {
-    Start: start
+    startServer
 }
