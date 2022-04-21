@@ -1,14 +1,32 @@
-let posts = [
-    {
-        id: 1,
-        title: "Lorem ipsum dolor sit amet consectetur adipisicing elit",
-        body: "Voluptates quisquam tempora placeat quia ullam recusandae commodi possimus ad nulla sit animi quod deleniti, quam reprehenderit nesciunt, accusantium modi quis! Ab, corrupti velit est eaque incidunt tempora assumenda inventore facere dignissimos?"
-    },
-    {
-        id: 2,
-        title: "Voluptates quisquam tempora placeat quia ullam recusandae",
-        body: "Lorem ipsum dolor sit amet consectetur adipisicing elit commodi possimus ad nulla sit animi quod deleniti, quam reprehenderit nesciunt, accusantium modi quis! Ab, corrupti velit est eaque incidunt tempora assumenda inventore facere dignissimos?"
-    },
-]
+const { Sequelize, DataTypes, Model } = require("sequelize");
+const { config } = require("../modules/configuration.module");
 
-module.exports = posts
+const sequelize = new Sequelize({
+    dialect: 'postgres',
+    host: config.DB_HOST,
+    username: config.DB_USER,
+    password: config.DB_PASS,
+    database: config.DB_NAME,
+});
+
+class Post extends Model {}
+
+Post.init(
+  {
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    body: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    modelName: "Post",
+  }
+);
+
+Post.sync();
+module.exports = Post;

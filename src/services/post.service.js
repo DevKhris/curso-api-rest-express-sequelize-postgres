@@ -1,79 +1,57 @@
-const posts = require("../entities/post.entity");
+const Post = require("../entities/post.entity");
 
-const getPosts = () => {
+const getPosts = async () => {
   try {
-    return posts;
+    await Post.findAll().then((data) => {
+      return data
+    })
   } catch (ex) {
     console.error(ex);
     throw `Can't found requested resource : ${ex}`;
   }
 };
 
-const findPostById = (id) => {
+const findPostById = async (id) => {
   try {
-    let post = null;
-    if ((post = posts.find((post) => post.id === parseInt(id)))) {
-      return post;
-    }
-    throw "Can't find resource";
+    await Post.findByPk(parseInt(id)).then((data) => {
+      return data
+    })
   } catch (ex) {
     console.error(ex);
     throw `Can't found requested resource : ${ex}`;
   }
 };
 
-const createPost = (body) => {
+const createPost = async (body) => {
   try {
-    let post = ({ id, title, body } = body);
-
-    post.id = Math.floor((Math.random() * 1000) / 7);
-
-    if (posts.push(post)) {
-      return posts.filter((result) => result.id === post.id);
-    }
-    throw "Failed on creating this resource";
+    const post = { title: body.title, body: body.body}
+    await Post.create(post).then((data) => {
+      return data
+    })
   } catch (ex) {
     console.log(ex);
     throw `Can't create resource : ${ex}`;
   }
 };
 
-const updatePost = (id, body) => {
+const updatePost = async (id, body) => {
   try {
-    let post = posts.find((post) => post.id === parseInt(id));
-
-    const index = posts.indexOf(post);
-
-    post = { title, body } = body;
-    post.id = id;
-
-    if (index > -1) {
-      posts.splice(index, 1);
-
-      posts[index] = post;
-
-      return "Post updated succesfully";
-    }
-
-    throw "Can't find resource to update";
+    await Post.update(body, { where: { id: parseInt(id) } }).then((num) => {
+      if (num > 1) return "Post updated succesfully";
+    })
   } catch (ex) {
     console.log(ex);
     throw `Can't update resource : ${ex}`;
   }
 };
 
-const deletePost = (id) => {
+const deletePost = async (id) => {
   try {
-    let post = posts.find((post) => post.id === parseInt(id));
-
-    const index = posts.indexOf(post);
-
-    if (index > -1) {
-      posts.splice(index, 1);
-      return "Post deleted succesfully";
-    }
-
-    throw `Can't delete a resource that doesn't exists`;
+    await Post.destroy( { where: { id: parseInt(id) } }).then((num) => {
+      if (num => 1 ) return "Post deleted succesfully";
+    }).catch((err) => {
+      throw err;
+    })
   } catch (ex) {
     console.log(ex);
     throw `Can't delete resource : ${ex}`;

@@ -1,22 +1,23 @@
-const Sequelize = require('sequelize')
+const { Sequelize } = require("sequelize");
+const { config } = require("./configuration.module");
 
-const connectDatabase = async (uri) => {
+const connectDatabase = async () => {
+  try {
     const sequelize = new Sequelize({
-        dialect: process.env.DB_PROVIDER,
-        host: process.env.DB_HOST,
-        username: process.env.DB_USER ,
-        password: process.env.DB_PASS,
-        database: process.env.DB_NAME
+      dialect: 'postgres',
+      host: config.DB_HOST,
+      username: config.DB_USER,
+      password: config.DB_PASS,
+      database: config.DB_NAME,
     })
 
-    try {
-        await sequelize.authenticate()
-        console.info('Database Connected Succesfully')
-    } catch (ex) {
-        console.error('Unable to establish connection with database:', ex)
-    }
+    await sequelize.sync({ force: true});
+    console.info("Database Connected Succesfully")
+  } catch (ex) {
+    console.error("Unable to establish connection with database:", ex)
+  }
 }
 
 module.exports = {
-    connectDatabase
+  connectDatabase,
 }
