@@ -1,57 +1,35 @@
-const posts = require('../entities/post.entity')
 
-const getPosts = () => {
-   try {
-    return { code: 200, content: posts }
-   } catch (ex) {
-       console.error(ex)
-       return { code: 404, content: `Can't found requested resource : ${ex}` }
-   } 
-}
+const postService = require('../services/post.service')
 
-const findPostById = (id) => {
+const index = () => {
     try {
-        let post = posts.find(post => post.id === parseInt(id))
-        return { code: 200, content: post }
+        return { code: 200, content: postService.getPosts()}
     } catch (ex) {
-       console.error(ex)
-       return { code: 404, content: `Can't found requested resource : ${ex}` }
-    } 
-}
-
-const createPost = (body) => {
-    try {
-        let post = { id, title, body } = body
-        post.id = Math.floor(Math.random() * 1000 / 7 );
-        if(posts.push(post)) {
-            return { code: 201, content: posts.filter(result => result.id === post.id) }
-        }
-        throw "Can't create resource"
-    } catch (error) {
-        console.error(ex)
-        return { code: 400, content: `Can't create resource : ${ex}` }    
+        return { code: 404, content: ex }
     }
 }
 
-const updatePost = (id, body) => {
+const get = (id) => {
     try {
-        let post = posts.find(post => post.id === parseInt(id))
+        return { code: 200, content: postService.findPostById(id) }
+    } catch (ex) {
+       console.error(ex)
+       return { code: 404, content: ex }
+    } 
+}
 
-        const index = posts.indexOf(post)
-    
-        post = { title, body } = body
-        post.id = id
-    
-        if(index > -1 ) {
-            posts.splice(index, 1)
+const create = (body) => {
+    try {
+        return { code: 201, content: postService.createPost(body) }
+    } catch (error) {
+        console.error(ex)
+        return { code: 400, content: ex }    
+    }
+}
 
-            posts[index] = post
-
-            return { code: 200, content: 'Post updated succesfully' }
-        }
-    
-        throw "Can't update the requested resource"
-
+const update = (id, body) => {
+    try {
+        return { code: 200, content: postService.updatePost(id, body)}
     } catch (ex) {
         console.error(ex)
         return { code: 404, content: ex }   
@@ -59,19 +37,9 @@ const updatePost = (id, body) => {
 }
 
 
-const deletePost = (id) => {
+const del = (id) => {
     try {
-        let post = posts.find(post => post.id === parseInt(id))
-
-        const index = posts.indexOf(post)
-        
-        if(index > -1) {
-            posts.splice(index, 1)
-            return { code: 200, content: 'Post deleted succesfully' }
-        }
-        
-        throw `Can't delete a resource that doesn't exists`
-
+        return { code: 200, content: postService.deletePost(id) }
     } catch (ex) {
         console.error(ex)
         return { code: 404, content: ex }   
@@ -79,9 +47,9 @@ const deletePost = (id) => {
 }
 
 module.exports = {
-    getPosts,
-    findPostById,
-    createPost,
-    updatePost,
-    deletePost
+    index,
+    get,
+    create,
+    update,
+    del
 }
